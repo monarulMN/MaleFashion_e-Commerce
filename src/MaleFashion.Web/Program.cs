@@ -1,46 +1,101 @@
 using MaleFashion.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+var bootstrapLoggerConfig = new LoggerConfiguration()
+    .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day);
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseMigrationsEndPoint();
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (!string.IsNullOrWhiteSpace(connString) && !connString.Contains("Your_Server", StringComparison.OrdinalIgnoreCase))
+    {
+        bootstrapLoggerConfig.WriteTo.MSSqlServer(
+            connectionString: connString,
+            sinkOptions: new MSSqlServerSinkOptions
+            {
+                TableName = "Logs",
+                AutoCreateSqlTable = true
+            });
+    }
 }
-else
+catch
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+
 }
 
-app.UseHttpsRedirection();
-app.UseRouting();
+Log.Logger = bootstrapLoggerConfig.CreateBootstrapLogger();
 
-app.UseAuthorization();
+try
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-app.MapStaticAssets();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
 
-app.MapRazorPages()
-   .WithStaticAssets();
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-app.Run();
+
+
+    builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddEntityFrameworkStores<ApplicationDbContext>();
+    builder.Services.AddControllersWithViews();
+
+    #region Serilog Configuration
+    builder.Host.UseSerilog((context, loggerConfiguration) =>
+        loggerConfiguration.MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .ReadFrom.Configuration(context.Configuration));
+
+    #endregion
+
+
+    var app = builder.Build();
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseMigrationsEndPoint();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseRouting();
+
+    app.UseAuthorization();
+
+    app.MapStaticAssets();
+    app.UseStaticFiles();
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
+        .WithStaticAssets();
+
+    app.MapRazorPages()
+       .WithStaticAssets();
+
+    Log.Information("Application Starting...");
+
+    app.Run();
+}
+catch(Exception ex)
+{
+    Log.Fatal(ex, "Application Crashed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
