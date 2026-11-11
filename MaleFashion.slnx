@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="src/MaleFahion.Application/MaleFahion.Application.csproj" Id="6dcb99d9-a4a8-43f2-a099-6f670e3554ec" />
+  <Project Path="src/MaleFashion.Domain/MaleFashion.Domain.csproj" Id="2e067a92-18c1-4c18-9edd-816f6ff03362" />
+  <Project Path="src/MaleFashion.Infrastructure/MaleFashion.Infrastructure.csproj" Id="426a89db-f678-4388-a92b-ac651f0e43e2" />
+  <Project Path="src/MaleFashion.Web/MaleFashion.Web.csproj" Id="51079b89-6bb4-400a-b3ae-7aa0d223de18" />
+</Solution>
