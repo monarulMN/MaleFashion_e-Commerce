@@ -1,32 +1,33 @@
-using MaleFashion.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using MaleFashion.Infrastructure.Extensions;
+using MaleFashion.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var bootstrapLoggerConfig = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day);
 
-try
-{
-    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
-    if (!string.IsNullOrWhiteSpace(connString) && !connString.Contains("Your_Server", StringComparison.OrdinalIgnoreCase))
-    {
-        bootstrapLoggerConfig.WriteTo.MSSqlServer(
-            connectionString: connString,
-            sinkOptions: new MSSqlServerSinkOptions
-            {
-                TableName = "Logs",
-                AutoCreateSqlTable = true
-            });
-    }
-}
-catch
-{
+//try
+//{
+//    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+//    if (!string.IsNullOrWhiteSpace(connString) && !connString.Contains("Your_Server", StringComparison.OrdinalIgnoreCase))
+//    {
+//        bootstrapLoggerConfig.WriteTo.MSSqlServer(
+//            connectionString: connString,
+//            sinkOptions: new MSSqlServerSinkOptions
+//            {
+//                TableName = "Logs",
+//                AutoCreateSqlTable = true
+//            });
+//    }
+//}
+//catch
+//{
 
-}
+//}
 
 Log.Logger = bootstrapLoggerConfig.CreateBootstrapLogger();
 
@@ -36,8 +37,7 @@ try
         ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(connectionString));
+    var migrationAssembly = typeof(ApplicationDbContext).Assembly;
 
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -56,6 +56,13 @@ try
 
     #endregion
 
+    #region Dependency Injection Configuration
+    builder.Services.AddInfrastructureDependency();
+    #endregion
+
+    #region DbContext Configuration
+    builder.Services.AddDbContext(connectionString, migrationAssembly);
+    #endregion
 
     var app = builder.Build();
 
