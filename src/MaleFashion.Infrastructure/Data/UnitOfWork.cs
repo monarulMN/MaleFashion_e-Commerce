@@ -21,12 +21,12 @@ namespace MaleFashion.Infrastructure.Data
             _dbContext.Dispose();
         }
 
-        public void Save()
+        public void Save(CancellationToken cancellationToken)
         {
             _dbContext.SaveChanges();
         }
 
-        public async Task SaveAsync()
+        public async Task SaveAsync(CancellationToken cancellationToken)
         {
             await _dbContext.SaveChangesAsync();
         }
