@@ -10,24 +10,24 @@ var builder = WebApplication.CreateBuilder(args);
 var bootstrapLoggerConfig = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day);
 
-//try
-//{
-//    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
-//    if (!string.IsNullOrWhiteSpace(connString) && !connString.Contains("Your_Server", StringComparison.OrdinalIgnoreCase))
-//    {
-//        bootstrapLoggerConfig.WriteTo.MSSqlServer(
-//            connectionString: connString,
-//            sinkOptions: new MSSqlServerSinkOptions
-//            {
-//                TableName = "Logs",
-//                AutoCreateSqlTable = true
-//            });
-//    }
-//}
-//catch
-//{
+try
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (!string.IsNullOrWhiteSpace(connString) && !connString.Contains("Your_Server", StringComparison.OrdinalIgnoreCase))
+    {
+        bootstrapLoggerConfig.WriteTo.MSSqlServer(
+            connectionString: connString,
+            sinkOptions: new MSSqlServerSinkOptions
+            {
+                TableName = "Logs",
+                AutoCreateSqlTable = true
+            });
+    }
+}
+catch
+{
 
-//}
+}
 
 Log.Logger = bootstrapLoggerConfig.CreateBootstrapLogger();
 
@@ -42,9 +42,10 @@ try
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
+    #region Identity Configuration
+    builder.Services.AddIdentity();
+    #endregion
 
-    builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddEntityFrameworkStores<ApplicationDbContext>();
     builder.Services.AddControllersWithViews();
 
     #region Serilog Configuration
