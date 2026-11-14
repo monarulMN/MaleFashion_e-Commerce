@@ -22,13 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Logs\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MaleFahion.Application\MaleFahion.Application.csproj" />
     <ProjectReference Include="..\MaleFashion.Domain\MaleFashion.Domain.csproj" />
     <ProjectReference Include="..\MaleFashion.Infrastructure\MaleFashion.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>

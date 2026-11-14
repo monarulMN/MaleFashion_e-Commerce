@@ -1,4 +1,6 @@
 ﻿using MaleFahion.Application.Contracts;
+using MaleFashion.Application.Contracts.Services;
+using MaleFashion.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -8,9 +10,10 @@ namespace MaleFashion.Infrastructure.Extensions
 {
     public static class DependencyInjections
     {
-        public static IServiceCollection AddInfrastructureDependency(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructureDependency(this IServiceCollection services, string rootPath)
         {
             //services.AddScoped<IApplicationUnitOfWork, IApplicationUnitOfWork>();
+            services.AddSingleton<IFileStorageService, IFileStorageService>( x => new FileStorageService(rootPath));
 
             return services;
         }

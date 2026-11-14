@@ -58,7 +58,7 @@ try
     #endregion
 
     #region Dependency Injection Configuration
-    builder.Services.AddInfrastructureDependency();
+    builder.Services.AddInfrastructureDependency(builder.Environment.WebRootPath);
     #endregion
 
     #region DbContext Configuration
@@ -88,12 +88,17 @@ try
     app.UseStaticFiles();
 
     app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
+        name: "area",
+        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
         .WithStaticAssets();
 
-    app.MapRazorPages()
-       .WithStaticAssets();
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}") 
+        .WithStaticAssets();
+
+    //app.MapRazorPages()
+    //   .WithStaticAssets();
 
     Log.Information("Application Starting...");
 
