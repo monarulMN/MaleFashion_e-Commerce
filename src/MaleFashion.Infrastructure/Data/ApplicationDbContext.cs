@@ -1,4 +1,5 @@
-﻿using MaleFashion.Infrastructure.Identity;
+﻿using MaleFashion.Domain.Entities.Catalog;
+using MaleFashion.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,5 +15,14 @@ namespace MaleFashion.Infrastructure.Data
             ApplicationRoleClaim,
             ApplicationUserToken>(options)
     {
+      
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationRole>().HasData(Seeds.RoleSeeds.GetRoles());
+            builder.Entity<ApplicationUser>().HasData(Seeds.AdminUserSeed.GetAdminUser());
+            builder.Entity<ApplicationUserRole>().HasData(Seeds.AdminUserSeed.GetAdminUserRole());
+        }
     }
 }

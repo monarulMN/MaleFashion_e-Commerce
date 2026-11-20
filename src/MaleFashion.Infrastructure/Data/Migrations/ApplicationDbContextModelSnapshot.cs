@@ -48,6 +48,22 @@ namespace MaleFashion.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            ConcurrencyStamp = "7179F798-1F0F-46EE-A08B-059EC091B0F1",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            ConcurrencyStamp = "8BDD5A9A-61A7-4448-A135-E840CAC136A9",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
+                        });
                 });
 
             modelBuilder.Entity("MaleFashion.Infrastructure.Identity.ApplicationRoleClaim", b =>
@@ -146,6 +162,26 @@ namespace MaleFashion.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "F1E852D4-90C3-481B-8526-7B1A45C9E231",
+                            Email = "admin@malefashion.com",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@MALEFASHION.COM",
+                            NormalizedUserName = "ADMIN@MALEFASHION.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB3IfcxVAyomYxyjmzV8acaKeiBzNufAFWZxFui4R2QlCa/+X71ODjJlJBC1AJSs3g==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "A7C934E2-55B1-4A89-B817-2D9981E3F1A0",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@malefashion.com"
+                        });
                 });
 
             modelBuilder.Entity("MaleFashion.Infrastructure.Identity.ApplicationUserClaim", b =>
@@ -206,6 +242,13 @@ namespace MaleFashion.Infrastructure.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            RoleId = new Guid("00000000-0000-0000-0000-000000000001")
+                        });
                 });
 
             modelBuilder.Entity("MaleFashion.Infrastructure.Identity.ApplicationUserToken", b =>
